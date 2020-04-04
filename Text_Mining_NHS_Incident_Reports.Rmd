@@ -1,0 +1,205 @@
+---
+title: "Text Mining Patient Safety Data"
+author: "Chris Mainey"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    seal: false
+bibliography: "bibliography.bib"
+---
+class: middle
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.align = "center", 
+                      dev.args = list(png = list(type = "cairo")), fig.retina=3) 
+
+library(Cairo)
+
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear",
+           cite.style = "alphabetic",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+myBib <- ReadBib("./bibliography.bib", check = FALSE)
+```
+
+.pull-left[
+
+<br><br><br>
+<br><br>
+
+# Test Mining Patient Safety Data
+
+<br><br><br>
+<br><br>
+
+`r icon::fa("envelope")` chris.mainey@uhb.nhs.uk
+
+`r icon::fa("globe")` [mainard.co.uk](https://www.mainard.co.uk)
+
+`r icon::fa("github")` [github.com/chrismainey](https://github.com/chrismainey)
+
+`r icon::fa("twitter")` [twitter.com/chrismainey](https://twitter.com/chrismainey)
+
+]
+
+.pull-right[
+
+<br><br><br>
+<br><br><br><br>
+
+<img src="man/figures/iceberg.jpg" align="middle">
+
+
+]
+
+
+---
+
+# Patient Safety and Incident Reporting
+
++ Prevention of errors and adverse effects to patients associated with health care (WHO description).
+
++ Increasingly prominent in NHS, after 'An Organisation with memory' __(Donaldson, 2000)__
+
+--
+
+.pull-left[
++ Incident reporting is seen as a pillar of this:
+ + Based on other industries
+ + Not implemented in same way __(Macrae, 2015)__
+ + Should be a cue for further investigation
+ + 'Tip of the iceberg'
+ + Incidents  represent multiple failures of systems
+]
+
+.pull-right[
+<img src="man/figures/reason.png" align="middle">
+.small[Figure from ___Donaldson (2002)___, based on ___Reason (1990)___.  Defensive systems as solid parts of each slice, holes are vulnerabilities.  Adverse events often result of alignment of several system weaknesses, represented by blue arrow.]
+]
+
+---
+
+## The National Reporting and Learning System (NRLS)
+
+_Incidents:_
+
+“Any unintended event caused by the health care that either did or could have led to patient harm” 
+
+--
+
++ Local incident reporting systems, e.g. Datix
+
+--
+
++ Mapped and submitted to national system (NRLS)
+
+--
+
++ Examples of learning:
+ + Risks in airway management between critical care and other settings (McGrath and Thomas, 2011)
+ + Drug-related errors are commonly about wrong administration (Cousins et al., 2012) (Franklin et al., 2014)),
+ + Risks of shock and death using bone cement for fractured neck of femur surgery (Rutter et al., 2014) 
+ 
+--
+
++ Major problems with data, including completeness, anonymisation, quality of reports etc.
+
+
+
+---
+
+# How is it used?
+
++ Quarterly and monthly figures
+ + Counts
+ + Is high number of reports good or bad?
+ + Different size organisations?
+ + Major part of my work was developing risk adjustment methods for this
+ 
+--
+
++ Manual reading of incident reports:
+ + Trained clinical reviewrs
+ + Qualitative methods
+
+---
+
+## See the problem?
+
+--
+
++ Real signal is in free-text
+
+--
+
++ Regulator is only able to review 0.5%, representing severe harm or death
+
+--
+
+__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  ___Prof. Donaldson, (Francis, 2013).___
+
+--
+
+<br><br>
+## What if we can use text mining methods to help?
+
+---
+
+# Previous work
+
+
+---
+
+# My work
+
+Used the `tidytext` package (Silge Robinson,)
+
+---
+
+
+---
+# References
+
+.smaller[
+
+COUSINS, D. H., GERRETT, D. & WARNER, B. 2012. A review of medication incidents reported to the National Reporting and Learning System in England and Wales over 6 years (2005-2010). Br J Clin Pharmacol, 74, 597-604.
+
+DONALDSON, L. 2000. An organisation with a memory. Deparment of Health. London: The Stationary Office.
+
+DONALDSON, L. 2002. An organisation with a memory. Clin Med, 2, 452-7.
+
+FRANCIS, R. 2013. Report of the Mid Staffordshire NHS Foundation Trust Public Inquiry : volume 2 : analysis of evidence and lessons learned (part 2), London, The Stationery Office
+
+FRANKLIN, B. D., PANESAR, S. S., VINCENT, C. & DONALDSON, L. J. 2014. Identifying systems failures in the pathway to a catastrophic event: an analysis of national incident report data relating to vinca alkaloids. BMJ Qual Saf, 23, 765-72.
+
+MACRAE, C. 2016. The problem with incident reporting. BMJ Quality & Safety, 25, 71
+
+MCGRATH, B. A. & THOMAS, A. N. 2011. Patient safety incidents associated with tracheostomies: A comparison of levels of harm between critical care and ward environments. British Journal of Anaesthesia, 106 (3), 439.
+
+REASON, J. 1990. Human Error, Cambridge University Press.
+
+RUTTER, P. D., PANESAR, S. S., DARZI, A. & DONALDSON, L. J. 2014. What is the risk of death or severe harm due to bone cement implantation syndrome among patients undergoing hip hemiarthroplasty for fractured neck of femur? A patient safety surveillance study. BMJ Open, 4, e004853.
+
+SILGE, J. & ROBINSON, D. 2016. tidytext: Text Mining and Analysis Using Tidy Data Principles in R
+
+
+]
+
+
+
+
+
+
