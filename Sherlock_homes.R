@@ -2,6 +2,8 @@
 # https://github.com/juliasilge/sherlock-holmes
 
 
+# Part 1
+
 library(tidyverse)
 library(tidytext)
 library(gutenbergr)
@@ -53,6 +55,7 @@ tidy_sherlock %>%
   coord_flip()
 
 
+# Part 2
 
 library(topicmodels)
 #library(stm)

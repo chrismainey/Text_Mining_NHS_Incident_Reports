@@ -4,7 +4,7 @@
     <title>Text Mining Patient Safety Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Chris Mainey" />
-    <meta name="date" content="2020-04-04" />
+    <meta name="date" content="2020-04-05" />
     <link href="libs/font-awesome/css/fontawesome-all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -47,6 +47,28 @@ class: middle
 
 ]
 
+---
+
+# Overview
+
+My PhD work focssedon modelling incident reporting in the NHS.
+
+
+Webinar will cover:
+
++ What is 'patient safety' and 'incident reporting'?
++ Overview of text mining
++ Introduce the `tidytext` package and approach
++ Introduce topic models
++ Show how this has been applied to incident reporing to:
+ + Visualise preparation
+ + Visualise terms in reports
+ + Model topics
+ + Use topics to predict harm-level of incident report
+
+
+Using Julia Silge's excellent Sherlock Holmes tutorial as examples:
+https://github.com/juliasilge/sherlock-holmes
 
 ---
 
@@ -60,6 +82,7 @@ class: middle
 
 .pull-left[
 + Incident reporting is seen as a pillar of this:
+
  + Based on other industries
  + Not implemented in same way __(Macrae, 2015)__
  + Should be a cue for further investigation
@@ -91,14 +114,14 @@ _Incidents:_
 --
 
 + Examples of learning:
- + Risks in airway management between critical care and other settings (McGrath and Thomas, 2011)
- + Drug-related errors are commonly about wrong administration (Cousins et al., 2012) (Franklin et al., 2014)),
- + Risks of shock and death using bone cement for fractured neck of femur surgery (Rutter et al., 2014) 
+
+ + Risks in airway management between critical care and other settings _(McGrath and Thomas, 2011)_
+ + Drug-related errors are commonly about wrong administration _(Cousins et al., 2012) (Franklin et al., 2014))_
+ + Risks of shock and death using bone cement for fractured neck of femur surgery _(Rutter et al., 2014)_ 
  
 --
 
 + Major problems with data, including completeness, anonymisation, quality of reports etc.
-
 
 
 ---
@@ -106,15 +129,18 @@ _Incidents:_
 # How is it used?
 
 + Quarterly and monthly figures
+
  + Counts
  + Is high number of reports good or bad?
  + Different size organisations?
  + Major part of my work was developing risk adjustment methods for this
- 
+
+&lt;br&gt; 
 --
 
 + Manual reading of incident reports:
- + Trained clinical reviewrs
+
+ + Trained clinical reviewers
  + Qualitative methods
 
 ---
@@ -142,20 +168,418 @@ __“The number of reports received is … huge, so that raises the question of 
 
 # Previous work
 
++ PhD project on text mining _(Bentham, 2010)_
+ + Rendered as high-dimesnional matrix
+ + PCA to reduce dimensionality
+ + Anomoly detection based on proximity of clusters in feature space
+ 
++ Commerical partnerships
+ + Text mining using LDA and wordclouds on local data _(Mastodon C, 2019)_
+ + Elastic search, term completion and scale advised _(Mastodon C, 2015)_
+
++ Local hospital data used in graph model based on word embeddings _(Altuncu et al., 2019)_
+ + Technically challenging to understand
+ + Seems to 
+ 
++ Primary care application _(Evans et al., 2019)_
+ + Words transformed as inputs for regression trees, SVM and Naive Bayes.
+
 
 ---
 
 # My work
 
-Used the `tidytext` package (Silge Robinson,)
+Used the `tidytext` package __(Silge &amp; Robinson, 2016)__
+
+--
+
+Used the 'bag-of-words' approach:
++ No semantics
++ Order not important, just presence
++ No negation
+
+&lt;br&gt;
+--
+
+Spelling, and jargon!
++ Jargon is a major partof clincal noting
++ No validation!  One team found 371 ways of spelling "clostridium difficile" _(Mayer et al., 2017)_
+
+
+---
+class: middle
+
+# Example 1 - Processing Sherlock Holmes data
 
 ---
 
+# Processes
+
+The text was imported from SQL database in a single column, several million rows, each representing a unique incident report.  The preparation steps were:
+
+- Import to R (watch out for ODBC and varchar(max))!
+- Convert to lower case
+- Tokenise (split into words _(below)_, n-grams, or "skip-grams")
+- Remove stop words
+- Remove additional known 'noise' including possessive endings and non-alpha numeric characters
+- Remove dominant word 'patient' and abbreviation 'pt'
+- Stemming - reducing variant endings on words(using `SnowballC` stemmer)
+
+--
+
+&lt;br&gt;&lt;br&gt;
+- Visualise: word clouds
+- TF-IDF? Didn't really help
+- Topic models
+- Use topics as predictors of harm
+
+---
+# Example
+
+
+```r
+tidy_dt &lt;- mydataframe %&gt;%
+  unnest_tokens(word, Descrip, token = "words") %&gt;%
+  as.data.frame() %&gt;%
+  anti_join(get_stopwords()) %&gt;%
+  mutate(word = ifelse(word=="pt", "patient", word)) %&gt;%
+  filter(!str_detect(word, "patient")) %&gt;%
+  mutate(word_clean = str_replace_all(word,"\u2019s|'s","")) %&gt;%
+  mutate(word_clean = ifelse(str_detect(word_clean,"[^[:alpha:]]"),NA,word_clean)) %&gt;%
+  filter(!is.na(word_clean)) %&gt;%
+  add_count(word_clean)
+
+
+#### Stem ####
+library(SnowballC)
+
+tidy_dt2&lt;-tidy_dt %&gt;%
+  mutate(word_stem = wordStem(word_clean, language="english"))
+```
+---
+
+# Visualise 
+
+Which ever method you like!
+
+You could use "wordclouds":
+
+
+```r
+library(wordcloud)
+library(RColorBrewer)
+
+# Set up a palette
+pal2 &lt;- brewer.pal(8,"Dark2")
+
+tidy_dt2 %&gt;%
+  count(word_stem) %&gt;%
+  with(wordcloud(word_stem, n, max.words = 100#, color="#E76BF3"
+                 , random.order = FALSE, colors=pal2, rot.per = 0, fixed.asp = 90))
+```
+
+
+Can be a bit tricky with window size etc.
+
+---
+# Processing wordclouds (1)
+
+.pull-left[
+Simply Tokenised
+
+&lt;center&gt;&lt;img src='./man/figures/WC_process1.png' align="left" width=120% text-align="left"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+Cleaned
+
+&lt;center&gt;&lt;img src='./man/figures/WC_process2.png' align="center" width=120% text-align="left"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Processing wordclouds (2)
+
+.pull-left[
+Cleaned, and stop-words removed
+
+&lt;center&gt;&lt;img src='./man/figures/WC_process3.png' align="center" width=130% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+Cleaned, stop-words removed, and stemmed
+
+&lt;center&gt;&lt;img src='./man/figures/WC_process4.png' align="center" width=120% text-align="left"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Words by Harm-level (1)
+
+
+.pull-left[
+### No Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_harm1.png' align="left" width=130% text-align="left"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+### Low Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_harm2.png' align="center" width=120% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Words by Harm-level (2)
+
+
+.pull-left[
+### Moderate Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_harm3.png' align="center" width=120% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+### Severe Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_harm4.png' align="center" width=110% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Words by Harm-level (3)
+
+
+.pull-left[
+### Death
+
+&lt;center&gt;&lt;img src='./man/figures/WC_harm5.png' align="center" width=120% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+.pull-right[
+&lt;br&gt;
+- "patient" dominated, removed in cleaning and "PT" mapped to "patient"
+- "pressur" prevalent in lower harm incidents
+- "cardiac" prevalent in severe and death incidents
+- words associated with beds, staffing and transfer were common in most levels of harm.
+
+- Size of groups varies hugely
+
+]
+
+
+---
+
+
+# Skip-grams by Harm-level (1)
+
+
+.pull-left[
+### No Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_big1.png' align="left" width=100% text-align="left"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+### Low Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_big2.png' align="center" width=100% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Skip-grams by Harm-level (2)
+
+
+.pull-left[
+### Moderate Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_big3.png' align="center" width=100% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+
+.pull-right[
+### Severe Harm
+
+&lt;center&gt;&lt;img src='./man/figures/WC_big4.png' align="center" width=100% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+---
+
+# Skip-grams by Harm-level (3)
+
+
+.pull-left[
+### Death
+
+&lt;center&gt;&lt;img src='./man/figures/WC_big5.png' align="center" width=100% text-align="center"&gt;&lt;/center&gt;
+
+]
+
+.pull-right[
+&lt;br&gt;
+- removed single letters
+- "blood pressure" and "pressure ulcer" differentiated
+- "nero obs" common in most levels of harm
+- "left" side incidents surprisingly common
+&lt;br&gt;&lt;br&gt;
+- skip-grams, even naively constructed, can differentiate between terms that share words
+
+
+]
+
+
+---
+# Topic Modelling
+
+- Various approaches, but a common option: Latent Dirichlet Allocation (LDA) _(Blei, 2003)_ 
+
+- Unsupervised model:
+ - Generative probabilistic model
+ - Three-level structure of terms/words, topics and documents
+ - Words distributed across topics, topics distributed across documents
+ - Probability of topic, not classification.
+
+--
+
+&lt;br&gt;
+
+- How many topics?
+ - Can model as many as you like.
+ - EM or MCMC approaches differ slightly
+ - Various metrics, cross-validation
+ - `ldatuning` package is a good option _(Murzintcev, 2019)_
+
+--
+
+&lt;br&gt;
+
+- Can then be use to predict probability:
+ - probability topic represents document ( `\(\gamma\)` )
+ - probability word represents a topic ( `\(\beta\)` )
+
+---
+class: middle
+
+# Example 2: Topics model for Sherlock Holmes
+
+---
+
+# LDA
+
+
+```r
+library(topicmodels)
+library(ldatuning)
+
+dtm&lt;- tidy_dt %&gt;% count(ID, word, sort = TRUE) %&gt;% cast_dtm(ID, word, n)
+
+lda40 &lt;- LDA(dtm, k = 40, method="Gibbs",control=list(seed=123, verbose=1))
+
+LDAtopics &lt;- 
+  FindTopicsNumber(
+    dtm,
+    topics = seq(10, 100, 10),
+    metrics = c("Griffiths2004",
+              "CaoJuan2009", "Arun2010", "Deveaud2014"),
+    method = "Gibbs",
+    control = list(seed = 77, verbose=1),
+    mc.cores = 3L,
+    verbose = TRUE
+  )
+```
+
+---
+
+# Topics
+
+&lt;img src="man/figures/wordCal.png" align="middle"&gt;
+
+---
+
+# LDA models:
+
+- Words: 40, 100 &amp; 150
+- Skip-grams: 20, 30, 40 &amp; 50
+
+--
+
+&lt;br&gt;
+
+Used `\(\gamma\)` predictions in multiclass classification model for harm level:
+- __Naive Bayes__ - essentially conditional mean predictors, using `naiveBayes` from `e1071`
+- __Multinomial regression__ - using `multinom` from `nnet`
+- __LASSO regression__ - penalized regression that shrinks non-predictive inputs to avoid over-fitting, using `cv.glmnet` from `glmnet` (beware, this requires a model matrix input, not a formula interface)
+- __Random Forest__ - boostrapped regression trees (and resampled predictiors) using `randomForest`, `h2o`, and `caret`
+- __Gradient Boosting__ - boostrapped regression trees re-weighted on residuals, using `gbm`, `h2o`, and `caret`
+- __Neural network__ - using various multi-layer perceptrons, build using using `keras`
+
+
+---
+
+# LDA Words results:
+
+&lt;center&gt;&lt;img src='./man/figures/Harm_pred.png' align="center" width=100% text-align="center"&gt;&lt;/center&gt;
+
+- Naive Bayes performed worst, but was conservative due to imbalance
+- Random Forest showed best performance
+
+---
+
+# LDA skip-gram results:
+
+&lt;center&gt;&lt;img src='./man/figures/skipgramHarm.png' align="center" width=85% text-align="center"&gt;&lt;/center&gt;
+
+- Skip-gram models performed poorer than words
+- Random Forest still best performing model
+
+---
+
+# Conclusions
+__Incident reporting is big target for text mining!__
+
+- Word-based models are easy to implement
+- Skip-grams and words together allow differentiation in terms
+- Dictionaries of medical/patient safety terms would aid these techniques
+- Better validation from from submitting Trusts would aid models
+- LDA models were helpful for predicting harm level to 82.7%
+- Class imbalance is an impediment to many methods
+- Could be used as validation, or imputation for missing fields in some cases.
+- More complicated models have also been demonstrated, and word embeddings hold promise.
 
 ---
 # References
 
-.smaller[
+.small[
+
+ALTUNCU, M. T., MAYER, E., YALIRAKI, S. N. &amp; BARAHONA, M. 2018. From Free Text to Clusters of Content in Health Records: An Unsupervised Graph Partitioning Approach. arXiv preprint arXiv:1811.05711.
+
+BLEI, D. M., NG, A. Y. &amp; JORDAN, M. I. 2003. Latent dirichlet allocation. J. Mach. Learn. Res., 3, 993-1022.
+
+BENTHAM, J. 2010. Discovering New Kinds of Patient Safety Incidents. Doctor of Philosophy, Imperial College London.
+
+BENTHAM, J. &amp; HAND, D. J. 2009. Detecting New Kinds of Patient Safety Incidents. In: GAMA, J., COSTA, V. S., JORGE, A. M. &amp; BRAZDIL, P. B. (eds.) Discovery Science, Proceedings.
+
+BENTHAM, J. &amp; HAND, D. J. 2012. Data mining from a patient safety database: the lessons learned. Data Mining and Knowledge Discovery, 24, 195-217.
 
 COUSINS, D. H., GERRETT, D. &amp; WARNER, B. 2012. A review of medication incidents reported to the National Reporting and Learning System in England and Wales over 6 years (2005-2010). Br J Clin Pharmacol, 74, 597-604.
 
@@ -163,13 +587,23 @@ DONALDSON, L. 2000. An organisation with a memory. Deparment of Health. London: 
 
 DONALDSON, L. 2002. An organisation with a memory. Clin Med, 2, 452-7.
 
+EVANS, H. P., ANASTASIOU, A., EDWARDS, A., HIBBERT, P., MAKEHAM, M., LUZ, S., SHEIKH, A., DONALDSON, L. &amp; CARSON-STEVENS, A. 2019. Automated classification of primary care patient safety incident report content and severity using supervised machine learning (ML) approaches. Health Informatics Journal, 0, 1460458219833102
+
 FRANCIS, R. 2013. Report of the Mid Staffordshire NHS Foundation Trust Public Inquiry : volume 2 : analysis of evidence and lessons learned (part 2), London, The Stationery Office
 
 FRANKLIN, B. D., PANESAR, S. S., VINCENT, C. &amp; DONALDSON, L. J. 2014. Identifying systems failures in the pathway to a catastrophic event: an analysis of national incident report data relating to vinca alkaloids. BMJ Qual Saf, 23, 765-72.
 
 MACRAE, C. 2016. The problem with incident reporting. BMJ Quality &amp; Safety, 25, 71
 
+MASTODON C 2015. NRLS: report on technical prototyping.
+
+MASTODON C. 2019. patient safety text mining [Online]. https://www.mastodonc.com/casestudies/nhs/: Mastodon C. Available: https://www.mastodonc.com/casestudies/nhs/ [Accessed 08/03/2019 2019].
+
+MAYER, E., FLOTT, K., CALLAHAN, R. &amp; DARZI, A. 2017. National Reporting and Learning System Research and Development. London: Imperial College London.
+
 MCGRATH, B. A. &amp; THOMAS, A. N. 2011. Patient safety incidents associated with tracheostomies: A comparison of levels of harm between critical care and ward environments. British Journal of Anaesthesia, 106 (3), 439.
+
+MURZINTCEV, N. 2019. ldatuning: Tuning of the Latent Dirichlet Allocation Models Parameters. 1.0.0 ed. CRAN
 
 REASON, J. 1990. Human Error, Cambridge University Press.
 
