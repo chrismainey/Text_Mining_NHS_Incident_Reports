@@ -4,7 +4,7 @@
     <title>Text Mining Patient Safety Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Chris Mainey" />
-    <meta name="date" content="2020-04-05" />
+    <meta name="date" content="2020-04-07" />
     <link href="libs/font-awesome/css/fontawesome-all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -47,6 +47,7 @@ class: middle
 
 ]
 
+
 ---
 
 # Overview
@@ -70,6 +71,9 @@ Webinar will cover:
 Using Julia Silge's excellent Sherlock Holmes tutorial as examples:
 https://github.com/juliasilge/sherlock-holmes
 
+&lt;br&gt;
+
+Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 ---
 
 # Patient Safety and Incident Reporting
@@ -133,7 +137,7 @@ _Incidents:_
  + Counts
  + Is high number of reports good or bad?
  + Different size organisations?
- + Major part of my work was developing risk adjustment methods for this
+ + Major part of my work was developing risk-adjustment methods for this
 
 &lt;br&gt; 
 --
@@ -156,8 +160,9 @@ _Incidents:_
 + Regulator is only able to review 0.5%, representing severe harm or death
 
 --
+&lt;br&gt;
 
-__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  ___Prof. Donaldson, (Francis, 2013).___
+__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  &lt;br&gt; ___Prof. Sir Liam Donaldson, (Francis, 2013).___
 
 --
 
@@ -219,16 +224,16 @@ The text was imported from SQL database in a single column, several million rows
 
 - Import to R (watch out for ODBC and varchar(max))!
 - Convert to lower case
-- Tokenise (split into words _(below)_, n-grams, or "skip-grams")
+- Tokenise (split into words, n-grams, or "skip-grams")
 - Remove stop words
 - Remove additional known 'noise' including possessive endings and non-alpha numeric characters
 - Remove dominant word 'patient' and abbreviation 'pt'
-- Stemming - reducing variant endings on words(using `SnowballC` stemmer)
+- Stemming - reducing variant endings on words (using `SnowballC` stemmer)
 
 --
 
 &lt;br&gt;&lt;br&gt;
-- Visualise: word clouds
+- Visualise: plots, word clouds etc.
 - TF-IDF? Didn't really help
 - Topic models
 - Use topics as predictors of harm
@@ -304,7 +309,7 @@ Cleaned
 # Processing wordclouds (2)
 
 .pull-left[
-Cleaned, and stop-words removed
+Cleaned, and stop-words removed &lt;br&gt;&lt;br&gt;
 
 &lt;center&gt;&lt;img src='./man/figures/WC_process3.png' align="center" width=130% text-align="center"&gt;&lt;/center&gt;
 
@@ -451,7 +456,7 @@ Cleaned, stop-words removed, and stemmed
 ---
 # Topic Modelling
 
-- Various approaches, but a common option: Latent Dirichlet Allocation (LDA) _(Blei, 2003)_ 
+- Various methods, commonly: Latent Dirichlet Allocation (LDA) _(Blei, 2003)_ 
 
 - Unsupervised model:
  - Generative probabilistic model
@@ -464,8 +469,7 @@ Cleaned, stop-words removed, and stemmed
 &lt;br&gt;
 
 - How many topics?
- - Can model as many as you like.
- - EM or MCMC approaches differ slightly
+ - Can model as many as you like
  - Various metrics, cross-validation
  - `ldatuning` package is a good option _(Murzintcev, 2019)_
 

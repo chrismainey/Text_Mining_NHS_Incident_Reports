@@ -65,6 +65,7 @@ myBib <- ReadBib("./bibliography.bib", check = FALSE)
 
 ]
 
+
 ---
 
 # Overview
@@ -88,6 +89,9 @@ Webinar will cover:
 Using Julia Silge's excellent Sherlock Holmes tutorial as examples:
 https://github.com/juliasilge/sherlock-holmes
 
+<br>
+
+Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 ---
 
 # Patient Safety and Incident Reporting
@@ -151,7 +155,7 @@ _Incidents:_
  + Counts
  + Is high number of reports good or bad?
  + Different size organisations?
- + Major part of my work was developing risk adjustment methods for this
+ + Major part of my work was developing risk-adjustment methods for this
 
 <br> 
 --
@@ -174,8 +178,9 @@ _Incidents:_
 + Regulator is only able to review 0.5%, representing severe harm or death
 
 --
+<br>
 
-__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  ___Prof. Donaldson, (Francis, 2013).___
+__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  <br> ___Prof. Sir Liam Donaldson, (Francis, 2013).___
 
 --
 
@@ -237,16 +242,16 @@ The text was imported from SQL database in a single column, several million rows
 
 - Import to R (watch out for ODBC and varchar(max))!
 - Convert to lower case
-- Tokenise (split into words _(below)_, n-grams, or "skip-grams")
+- Tokenise (split into words, n-grams, or "skip-grams")
 - Remove stop words
 - Remove additional known 'noise' including possessive endings and non-alpha numeric characters
 - Remove dominant word 'patient' and abbreviation 'pt'
-- Stemming - reducing variant endings on words(using `SnowballC` stemmer)
+- Stemming - reducing variant endings on words (using `SnowballC` stemmer)
 
 --
 
 <br><br>
-- Visualise: word clouds
+- Visualise: plots, word clouds etc.
 - TF-IDF? Didn't really help
 - Topic models
 - Use topics as predictors of harm
@@ -320,7 +325,7 @@ Cleaned
 # Processing wordclouds (2)
 
 .pull-left[
-Cleaned, and stop-words removed
+Cleaned, and stop-words removed <br><br>
 
 <center><img src='./man/figures/WC_process3.png' align="center" width=130% text-align="center"></center>
 
@@ -467,7 +472,7 @@ Cleaned, stop-words removed, and stemmed
 ---
 # Topic Modelling
 
-- Various approaches, but a common option: Latent Dirichlet Allocation (LDA) _(Blei, 2003)_ 
+- Various methods, commonly: Latent Dirichlet Allocation (LDA) _(Blei, 2003)_ 
 
 - Unsupervised model:
  - Generative probabilistic model
@@ -480,8 +485,7 @@ Cleaned, stop-words removed, and stemmed
 <br>
 
 - How many topics?
- - Can model as many as you like.
- - EM or MCMC approaches differ slightly
+ - Can model as many as you like
  - Various metrics, cross-validation
  - `ldatuning` package is a good option _(Murzintcev, 2019)_
 
