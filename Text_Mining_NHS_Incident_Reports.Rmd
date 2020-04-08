@@ -11,36 +11,25 @@ output:
       highlightLines: true
       countIncrementalSlides: false
     seal: false
-bibliography: "bibliography.bib"
 ---
 class: middle
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.align = "center", 
+knitr::opts_chunk$set(fig.width=10, fig.height=6, fig.align = "center", dpi=300,
                       dev.args = list(png = list(type = "cairo")), fig.retina=3) 
 
 library(Cairo)
 
 ```
 
-```{r, load_refs, include=FALSE, cache=FALSE}
-library(RefManageR)
-BibOptions(check.entries = FALSE,
-           bib.style = "authoryear",
-           cite.style = "alphabetic",
-           style = "markdown",
-           hyperlink = FALSE,
-           dashed = FALSE)
-myBib <- ReadBib("./bibliography.bib", check = FALSE)
-```
 
 .pull-left[
 
 <br><br><br>
 <br><br>
 
-# Test Mining Patient Safety Data
+# Text Mining Patient Safety Data
 
 <br><br><br>
 <br><br>
@@ -70,7 +59,7 @@ myBib <- ReadBib("./bibliography.bib", check = FALSE)
 
 # Overview
 
-My PhD work focssedon modelling incident reporting in the NHS.
+My PhD work focused on modelling incident reporting in the NHS.
 
 
 Webinar will cover:
@@ -79,7 +68,7 @@ Webinar will cover:
 + Overview of text mining
 + Introduce the `tidytext` package and approach
 + Introduce topic models
-+ Show how this has been applied to incident reporing to:
++ Show how this has been applied to incident reporting to:
  + Visualise preparation
  + Visualise terms in reports
  + Model topics
@@ -94,11 +83,51 @@ https://github.com/juliasilge/sherlock-holmes
 Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 ---
 
+# Sponsorship and supervision
+
+.pull-left[
++ Supervised by:
+ + Prof. Nick Freemantle - UCL
+ + Dr Milena Falcaro - UCL / King's
+ 
++ Sponsored by UHB
++ UHB input:
+ + Prof. Daniel Ray
+ + Prof. Simon Ball
+ + Dr David McNulty
+
++ Data and insight from NHS Improvement
+ + Dr Frances Healy
+ + Dr Julia Abernathy
+ + Ms Noreen Gul
+]
+
+.pull-right[
+
+<img src="man/figures/UCL_logo_black.png" align="middle" width = "75%">
+
+
+<img src="man/figures/logo.png" align="middle" width = "75%">
+
+
+<img src="man/figures/HI.png" align="middle" width = "75%">
+
+
+<img src="man/figures/uhb-logo-2017.png" align="middle">
+
+
+
+
+
+]
+
+---
+
 # Patient Safety and Incident Reporting
 
 + Prevention of errors and adverse effects to patients associated with health care (WHO description).
 
-+ Increasingly prominent in NHS, after 'An Organisation with memory' __(Donaldson, 2000)__
++ Increasingly prominent in NHS, after 'An Organisation with memory' ___(Donaldson, 2000)___
 
 --
 
@@ -137,9 +166,9 @@ _Incidents:_
 
 + Examples of learning:
 
- + Risks in airway management between critical care and other settings _(McGrath and Thomas, 2011)_
- + Drug-related errors are commonly about wrong administration _(Cousins et al., 2012) (Franklin et al., 2014))_
- + Risks of shock and death using bone cement for fractured neck of femur surgery _(Rutter et al., 2014)_ 
+ + Risks in airway management between critical care and other settings ___(McGrath and Thomas, 2011)___
+ + Drug-related errors are commonly about wrong administration ___(Cousins et al., 2012) (Franklin et al., 2014))___
+ + Risks of shock and death using bone cement for fractured neck of femur surgery ___(Rutter et al., 2014)___
  
 --
 
@@ -155,7 +184,7 @@ _Incidents:_
  + Counts
  + Is high number of reports good or bad?
  + Different size organisations?
- + Major part of my work was developing risk-adjustment methods for this
+ + Major part of my work was developing risk-adjustment methods to improve this
 
 <br> 
 --
@@ -164,6 +193,7 @@ _Incidents:_
 
  + Trained clinical reviewers
  + Qualitative methods
+ + Specific targets, or random samples?
 
 ---
 
@@ -191,20 +221,27 @@ __“The number of reports received is … huge, so that raises the question of 
 
 # Previous work
 
-+ PhD project on text mining _(Bentham, 2010)_
- + Rendered as high-dimesnional matrix
- + PCA to reduce dimensionality
- + Anomoly detection based on proximity of clusters in feature space
- 
-+ Commerical partnerships
- + Text mining using LDA and wordclouds on local data _(Mastodon C, 2019)_
- + Elastic search, term completion and scale advised _(Mastodon C, 2015)_
++ PhD project on text mining ___(Bentham, 2010)___
 
-+ Local hospital data used in graph model based on word embeddings _(Altuncu et al., 2019)_
- + Technically challenging to understand
- + Seems to 
+ + Rendered as high-dimensional matrixm then PCA to reduce dimensionality
+ + Anomaly detection based on proximity of clusters in feature space
+
+--
  
-+ Primary care application _(Evans et al., 2019)_
++ Commercial partnerships
+
+ + Text mining using LDA and word-clouds on local data ___(Mastodon C, 2019)___
+
+--
+
++ Local hospital data in graph model based on paragraph embeddings ___(Altuncu et al., 2019)___
+
+ + Technically challenging, but corresponds well with 'hand-coding'
+
+--
+ 
++ Primary care application ___(Evans et al., 2019)___
+
  + Words transformed as inputs for regression trees, SVM and Naive Bayes.
 
 
@@ -212,7 +249,7 @@ __“The number of reports received is … huge, so that raises the question of 
 
 # My work
 
-Used the `tidytext` package __(Silge & Robinson, 2016)__
+Used the `tidytext` package ___(Silge & Robinson, 2016)___
 
 --
 
@@ -225,8 +262,11 @@ Used the 'bag-of-words' approach:
 --
 
 Spelling, and jargon!
-+ Jargon is a major partof clincal noting
-+ No validation!  One team found 371 ways of spelling "clostridium difficile" _(Mayer et al., 2017)_
++ Jargon is a major part of clinical noting
++ No validation!  
+ + Some reports single letters (despite not being allowed) ___(Bentham, 2010)___
+ + Application errors, inluding code fragments ___(Bentham, 2010)___
+ + One team found 371 ways of spelling "clostridium difficile" ___(Mayer et al., 2017)___
 
 
 ---
@@ -284,7 +324,7 @@ tidy_dt2<-tidy_dt %>%
 
 Which ever method you like!
 
-You could use "wordclouds":
+You could use "word-clouds":
 
 ```{r wordcloud, eval=FALSE}
 library(wordcloud)
@@ -303,7 +343,7 @@ tidy_dt2 %>%
 Can be a bit tricky with window size etc.
 
 ---
-# Processing wordclouds (1)
+# Processing word-clouds (1)
 
 .pull-left[
 Simply Tokenised
@@ -322,7 +362,7 @@ Cleaned
 
 ---
 
-# Processing wordclouds (2)
+# Processing word-clouds (2)
 
 .pull-left[
 Cleaned, and stop-words removed <br><br>
@@ -549,7 +589,7 @@ Used $\gamma$ predictions in multiclass classification model for harm level:
 - __Naive Bayes__ - essentially conditional mean predictors, using `naiveBayes` from `e1071`
 - __Multinomial regression__ - using `multinom` from `nnet`
 - __LASSO regression__ - penalized regression that shrinks non-predictive inputs to avoid over-fitting, using `cv.glmnet` from `glmnet` (beware, this requires a model matrix input, not a formula interface)
-- __Random Forest__ - boostrapped regression trees (and resampled predictiors) using `randomForest`, `h2o`, and `caret`
+- __Random Forest__ - boostrapped regression trees (and resampled predictors) using `randomForest`, `h2o`, and `caret`
 - __Gradient Boosting__ - boostrapped regression trees re-weighted on residuals, using `gbm`, `h2o`, and `caret`
 - __Neural network__ - using various multi-layer perceptrons, build using using `keras`
 
@@ -587,7 +627,7 @@ __Incident reporting is big target for text mining!__
 - More complicated models have also been demonstrated, and word embeddings hold promise.
 
 ---
-# References
+# References (1)
 
 .small[
 
@@ -616,7 +656,12 @@ FRANKLIN, B. D., PANESAR, S. S., VINCENT, C. & DONALDSON, L. J. 2014. Identifyin
 MACRAE, C. 2016. The problem with incident reporting. BMJ Quality & Safety, 25, 71
 
 MASTODON C 2015. NRLS: report on technical prototyping.
+]
 
+---
+# References (2)
+
+.small[
 MASTODON C. 2019. patient safety text mining [Online]. https://www.mastodonc.com/casestudies/nhs/: Mastodon C. Available: https://www.mastodonc.com/casestudies/nhs/ [Accessed 08/03/2019 2019].
 
 MAYER, E., FLOTT, K., CALLAHAN, R. & DARZI, A. 2017. National Reporting and Learning System Research and Development. London: Imperial College London.

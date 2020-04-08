@@ -55,7 +55,7 @@ tidy_sherlock %>%
   coord_flip()
 
 
-# Part 2
+# Part 2: Topic models
 
 library(topicmodels)
 #library(stm)
