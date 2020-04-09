@@ -4,7 +4,7 @@
     <title>Text Mining Patient Safety Data</title>
     <meta charset="utf-8" />
     <meta name="author" content="Chris Mainey" />
-    <meta name="date" content="2020-04-08" />
+    <meta name="date" content="2020-04-09" />
     <link href="libs/font-awesome/css/fontawesome-all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -117,7 +117,7 @@ Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 
 # Patient Safety and Incident Reporting
 
-+ Prevention of errors and adverse effects to patients associated with health care (WHO description).
++ Prevention of errors and adverse effects to patients associated with health care - _World Health Organisation_
 
 + Increasingly prominent in NHS, after 'An Organisation with memory' ___(Donaldson, 2000)___
 
@@ -127,7 +127,7 @@ Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 + Incident reporting is seen as a pillar of this:
 
  + Based on other industries
- + Not implemented in same way __(Macrae, 2015)__
+ + Not implemented in same way ___(Macrae, 2015)___
  + Should be a cue for further investigation
  + 'Tip of the iceberg'
  + Incidents  represent multiple failures of systems
@@ -144,7 +144,7 @@ Material:  https://github.com/chrismainey/Text_Mining_NHS_Incident_Reports
 
 _Incidents:_
 
-“Any unintended event caused by the health care that either did or could have led to patient harm” 
+“Any unintended event caused by the health care that either did or could have led to patient harm”   ___(Sari et al., 2007)___
 
 --
 
@@ -185,6 +185,7 @@ _Incidents:_
 
  + Trained clinical reviewers
  + Qualitative methods
+ + NRLS cannot be an exhaustive source
  + Specific targets, or random samples?
 
 ---
@@ -200,9 +201,11 @@ _Incidents:_
 + Regulator is only able to review 0.5%, representing severe harm or death
 
 --
-&lt;br&gt;
+&lt;br&gt;&lt;br&gt;
 
-__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  &lt;br&gt; ___Prof. Sir Liam Donaldson, (Francis, 2013).___
+__“The number of reports received is … huge, so that raises the question of how can we analyse them all properly. Decisions therefore need to be made as to whether we need tighter rules on incident reporting, and the distinction between local and national level reporting and follow-through’__  
+&lt;br&gt;
+        ___Prof. Sir Liam Donaldson, (Francis, 2013).___
 
 --
 
@@ -241,7 +244,7 @@ __“The number of reports received is … huge, so that raises the question of 
 
 # My work
 
-Used the `tidytext` package ___(Silge &amp; Robinson, 2016)___
+Used the `tidytext` package, as easy entry point ___(Silge &amp; Robinson, 2016)___
 
 --
 
@@ -264,7 +267,8 @@ Spelling, and jargon!
 ---
 class: middle
 
-# Example 1 - Processing Sherlock Holmes data
+# Example 1:
+## Processing Sherlock Holmes data
 
 ---
 
@@ -283,13 +287,13 @@ The text was imported from SQL database in a single column, several million rows
 --
 
 &lt;br&gt;&lt;br&gt;
-- Visualise: plots, word clouds etc.
-- TF-IDF? Didn't really help
+- Visualise: plots, word-clouds etc.
+- TF-IDF? Didn't really help, too many doucments and rare words
 - Topic models
 - Use topics as predictors of harm
 
 ---
-# Example
+# Preparation
 
 
 ```r
@@ -315,7 +319,7 @@ tidy_dt2&lt;-tidy_dt %&gt;%
 
 # Visualise 
 
-Which ever method you like!
+Whichever method you like!
 
 You could use "word-clouds":
 
@@ -494,7 +498,7 @@ Cleaned, stop-words removed, and stemmed
 &lt;br&gt;
 - removed single letters
 - "blood pressure" and "pressure ulcer" differentiated
-- "nero obs" common in most levels of harm
+- "neuro obs" common in most levels of harm
 - "left" side incidents surprisingly common
 &lt;br&gt;&lt;br&gt;
 - skip-grams, even naively constructed, can differentiate between terms that share words
@@ -527,18 +531,21 @@ Cleaned, stop-words removed, and stemmed
 
 &lt;br&gt;
 
-- Can then be use to predict probability:
+- Can then be use to predict:
  - probability topic represents document ( `\(\gamma\)` )
  - probability word represents a topic ( `\(\beta\)` )
 
 ---
 class: middle
 
-# Example 2: Topics model for Sherlock Holmes
+# Example 2: 
+## Topic model for Sherlock Holmes
 
 ---
 
 # LDA
+
+Applying this to the NRLS data:
 
 
 ```r
@@ -552,7 +559,7 @@ lda40 &lt;- LDA(dtm, k = 40, method="Gibbs",control=list(seed=123, verbose=1))
 LDAtopics &lt;- 
   FindTopicsNumber(
     dtm,
-    topics = seq(10, 100, 10),
+    topics = c(5, seq(10, 50, 10), seq(75, 150, 25), 200,300)
     metrics = c("Griffiths2004",
               "CaoJuan2009", "Arun2010", "Deveaud2014"),
     method = "Gibbs",
@@ -611,7 +618,11 @@ Used `\(\gamma\)` predictions in multiclass classification model for harm level:
 # Conclusions
 __Incident reporting is big target for text mining!__
 
-- Word-based models are easy to implement
+- Word-based models are easy to implement, but require practise
+ - `tidytext` is a great way to access it if you know `tidyverse`
+
+--
+
 - Skip-grams and words together allow differentiation in terms
 - Dictionaries of medical/patient safety terms would aid these techniques
 - Better validation from from submitting Trusts would aid models
@@ -619,6 +630,10 @@ __Incident reporting is big target for text mining!__
 - Class imbalance is an impediment to many methods
 - Could be used as validation, or imputation for missing fields in some cases.
 - More complicated models have also been demonstrated, and word embeddings hold promise.
+
+--
+
+I hope this encouraged you to try an apply these methods yourself
 
 ---
 # References (1)
@@ -667,6 +682,8 @@ MURZINTCEV, N. 2019. ldatuning: Tuning of the Latent Dirichlet Allocation Models
 REASON, J. 1990. Human Error, Cambridge University Press.
 
 RUTTER, P. D., PANESAR, S. S., DARZI, A. &amp; DONALDSON, L. J. 2014. What is the risk of death or severe harm due to bone cement implantation syndrome among patients undergoing hip hemiarthroplasty for fractured neck of femur? A patient safety surveillance study. BMJ Open, 4, e004853.
+
+SARI, A. B., SHELDON, T. A., CRACKNELL, A. &amp; TURNBULL, A. 2007. Sensitivity of routine system for reporting patient safety incidents in an NHS hospital: retrospective patient case note review. BMJ, 334, 79.
 
 SILGE, J. &amp; ROBINSON, D. 2016. tidytext: Text Mining and Analysis Using Tidy Data Principles in R
 

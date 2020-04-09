@@ -1,8 +1,9 @@
 # This is based on Julia Silge's brilliant Sherlock Holmes tutorial
 # https://github.com/juliasilge/sherlock-holmes
 
-
-# Part 1
+#########################################################################
+# Part 1 - Prepataion
+#########################################################################
 
 library(tidyverse)
 library(tidytext)
@@ -55,31 +56,27 @@ tidy_sherlock %>%
   coord_flip()
 
 
+
+############################################################################################
 # Part 2: Topic models
+############################################################################################
 
 library(topicmodels)
-#library(stm)
+
 sherlock_dtm <- tidy_sherlock %>%
   count(story, word, sort = TRUE) %>%
   cast_dtm(story, word, n)
 
+
+# Build LDA model
 topic_model <- LDA(sherlock_dtm, k = 6, method = "Gibbs")
-
-# library(ldatuning)
-# topic_models<-FindTopicsNumber(sherlock_dtm
-#                                , topics = c(5,6,7)
-#                                , metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014")
-#                                , mc.cores = 3
-# )
-#                                
-# FindTopicsNumber_plot(topic_models)
-
 
 
 # per-document-per-topic probabilities
 td_gamma <- tidy(topic_model, matrix = "gamma",                    
                  document_names = rownames(sherlock_dtm))
 td_gamma
+
 
 # Lets plot them:
 ggplot(td_gamma, aes(gamma, fill = as.factor(topic))) +
