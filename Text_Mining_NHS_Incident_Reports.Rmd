@@ -624,22 +624,48 @@ Used $\gamma$ predictions in multiclass classification model for harm level:
 # Conclusions
 __Incident reporting is big target for text mining!__
 
-- Word-based models are easy to implement, but require practise
- - `tidytext` is a great way to access it if you know `tidyverse`
+- Word-based models are easy to implement, `tidytext` is a great way to access it if you know `tidyverse`
 
 --
 
 - Skip-grams and words together allow differentiation in terms
+
 - Dictionaries of medical/patient safety terms would aid these techniques
-- Better validation from from submitting Trusts would aid models
+
+- Better validation from submitting Trusts would aid models
+
+<br>
+--
+
 - LDA models were helpful for predicting harm level to 82.7%
-- Class imbalance is an impediment to many methods
-- Could be used as validation, or imputation for missing fields in some cases.
-- More complicated models have also been demonstrated, and word embeddings hold promise.
+
+- Class imbalance is an impediment to many methods, including predicting harm
+
+- More complicated models have also been demonstrated, but topic modelling performed as well as,or better, than other methods.
+
+---
+
+# Where to next?
+
+- Compare topics to clinical review/hand-coding
+
+- Word/paragraph embeddings / Fast-text are next steps
+
+- Identify clusters in feature-space:
+ - Targets for review
+ - Validate models
+ 
+- Identify similar/related incidents
+
+- Improve searches for incidents in data
 
 --
 
-I hope this encouraged you to try an apply these methods yourself
+<br>
+
+### Thank you for your time!
+
+I hope this encourages you to try and apply these methods for yourself!
 
 ---
 # References (1)
