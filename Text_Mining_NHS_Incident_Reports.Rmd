@@ -226,7 +226,7 @@ __“The number of reports received is … huge, so that raises the question of 
 
 + PhD project on text mining ___(Bentham, 2010)___
 
- + Rendered as high-dimensional matrixm then PCA to reduce dimensionality
+ + Rendered as high-dimensional matrix then PCA to reduce dimensionality
  + Anomaly detection based on proximity of clusters in feature space
 
 --
@@ -268,7 +268,7 @@ Spelling, and jargon!
 + Jargon is a major part of clinical noting
 + No validation!  
  + Some reports single letters (despite not being allowed) ___(Bentham, 2010)___
- + Application errors, inluding code fragments ___(Bentham, 2010)___
+ + Application errors, including code fragments ___(Bentham, 2010)___
  + One team found 371 ways of spelling "clostridium difficile" ___(Mayer et al., 2017)___
 
 
@@ -296,7 +296,7 @@ The text was imported from SQL database in a single column, several million rows
 
 <br><br>
 - Visualise: plots, word-clouds etc.
-- TF-IDF? Didn't really help, too many doucments and rare words
+- TF-IDF? Didn't really help, too many documents and rare words
 - Topic models
 - Use topics as predictors of harm
 
